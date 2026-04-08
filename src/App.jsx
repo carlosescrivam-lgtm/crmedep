@@ -275,48 +275,70 @@ export default function App() {
     });
   }
 
-  async function handleCsvUpload(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
+ async function handleCsvUpload(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
 
-    const origen = window.prompt("Nombre del origen/importación", file.name) || file.name;
-    const pais = window.prompt("País para esta importación", "Argentina") || "Argentina";
+  const origen = window.prompt("Nombre del origen/importación", file.name) || file.name;
+  const pais = window.prompt("País para esta importación", "Argentina") || "Argentina";
 
-    const text = await file.text();
-    const imported = csvToRows(text);
+  const text = await file.text();
+  const imported = csvToRows(text);
 
-    if (!imported.length) {
-      alert("No he podido leer el CSV.");
+  if (!imported.length) {
+    alert("No he podido leer el CSV.");
+    return;
+  }
+
+  setImporting(true);
+
+  try {
+    const rowsToUpsert = imported.map((row) => {
+      const dedupe_key = [
+        row.nombre?.trim()?.toLowerCase() || "",
+        row.ciudad?.trim()?.toLowerCase() || "",
+        row.provincia_estado?.trim()?.toLowerCase() || "",
+        row.telefono?.trim()?.toLowerCase() || "",
+      ].join("|");
+
+      return {
+        nombre: row.nombre || null,
+        direccion: row.direccion || null,
+        ciudad: row.ciudad || null,
+        provincia_estado: row.provincia_estado || null,
+        codigo_postal: row.codigo_postal || null,
+        telefono: row.telefono || null,
+        email: row.email || null,
+        web: row.web || null,
+        pais: pais || "Argentina",
+        origen: origen || file.name,
+        dedupe_key,
+      };
+    });
+
+    const { error } = await supabase
+      .from("crm_funerarias")
+      .upsert(rowsToUpsert, {
+        onConflict: "dedupe_key",
+        ignoreDuplicates: false,
+      });
+
+    if (error) {
+      console.error("Error importando CSV:", error);
+      alert(`Error importando CSV: ${error.message}`);
       return;
     }
 
-    setImporting(true);
-
-    for (const row of imported) {
-      const { error } = await supabase.rpc("crm_upsert_funeraria", {
-        p_nombre: row.nombre,
-        p_direccion: row.direccion,
-        p_ciudad: row.ciudad,
-        p_provincia_estado: row.provincia_estado,
-        p_codigo_postal: row.codigo_postal,
-        p_telefono: row.telefono,
-        p_email: row.email,
-        p_web: row.web,
-        p_pais: pais,
-        p_origen: origen,
-        p_assigned_to: null,
-      });
-
-      if (error) {
-        console.error("Error importando fila", row, error);
-      }
-    }
-
-    setImporting(false);
     await loadRows();
-    alert(`Importación terminada. Filas procesadas: ${imported.length}`);
+    alert(`Importación terminada. Filas procesadas: ${rowsToUpsert.length}`);
+  } catch (err) {
+    console.error("Error general importando CSV:", err);
+    alert("Error general importando CSV");
+  } finally {
+    setImporting(false);
     event.target.value = "";
   }
+}
 
   function exportTrackingCsv() {
     downloadFile(
