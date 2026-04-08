@@ -20,15 +20,19 @@ button, input, select, textarea { font: inherit; }
 .filters-card { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; padding: 16px; margin-bottom: 18px; }
 .input, .textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 16px; background: white; padding: 12px 14px; }
 .textarea { min-height: 150px; resize: vertical; }
-.content-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 18px; }
+.content-grid {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 18px;
+}
 .panel-header { padding: 18px 18px 0; }
 .panel-header h2 { margin: 0; font-size: 20px; }
 .list-scroll { max-height: 72vh; overflow: auto; padding: 18px; }
-.lead-card { width: 100%; text-align: left; margin-bottom: 12px; background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 16px; cursor: pointer; }
+.lead-card { width: 100%; text-align: left; margin-bottom: 12px; background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 10px; cursor: pointer; }
 .lead-card:hover { background: #f8fafc; }
 .lead-card.selected { border-color: #94a3b8; background: #f1f5f9; }
 .lead-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
-.lead-name { font-size: 18px; font-weight: 700; }
+.lead-name { font-size: 16px; font-weight: 700; }
 .lead-province { color: #64748b; margin-top: 4px; }
 .lead-badges { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .badge { display: inline-block; border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 700; }
