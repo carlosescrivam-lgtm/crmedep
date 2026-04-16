@@ -87,3 +87,25 @@ button, input, select, textarea { font: inherit; }
 label { display: block; margin-bottom: 8px; font-weight: 600; }
 .empty-state { color: #64748b; text-align: center; padding: 40px 0; }
 @media (max-width: 1080px) { .stats-grid, .filters-card, .content-grid, .form-grid { grid-template-columns: 1fr; } .topbar { flex-direction: column; } }
+.filters-card-4 {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.hero-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+@media (max-width: 1080px) {
+  .filters-card-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-card-top {
+    flex-direction: column;
+  }
+}

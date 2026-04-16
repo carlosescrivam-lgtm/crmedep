@@ -160,6 +160,7 @@ export default function App() {
   const [loadingRows, setLoadingRows] = useState(false);
 
   const [selectedProvince, setSelectedProvince] = useState("all");
+  const [selectedCountry, setSelectedCountry] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState(null);
@@ -224,17 +225,31 @@ export default function App() {
     [rows]
   );
 
-  const filteredRows = useMemo(() => {
-    return rows.filter((row) => {
-      const okProvince =
-        selectedProvince === "all" || row.provincia_estado === selectedProvince;
-      const okStatus =
-        statusFilter === "all" || row.estado_contacto === statusFilter;
-      const hayTexto = `${row.nombre} ${row.email} ${row.web} ${row.telefono} ${row.provincia_estado} ${row.ciudad}`.toLowerCase();
-      const okSearch = hayTexto.includes(search.toLowerCase());
-      return okProvince && okStatus && okSearch;
-    });
-  }, [rows, selectedProvince, statusFilter, search]);
+const countries = useMemo(
+  () =>
+    [...new Set(rows.map((r) => r.pais).filter(Boolean))].sort((a, b) =>
+      a.localeCompare(b)
+    ),
+  [rows]
+);
+
+ const filteredRows = useMemo(() => {
+  return rows.filter((row) => {
+    const okCountry =
+      selectedCountry === "all" || row.pais === selectedCountry;
+
+    const okProvince =
+      selectedProvince === "all" || row.provincia_estado === selectedProvince;
+
+    const okStatus =
+      statusFilter === "all" || row.estado_contacto === statusFilter;
+
+    const hayTexto = `${row.nombre} ${row.email} ${row.web} ${row.telefono} ${row.provincia_estado} ${row.ciudad} ${row.pais}`.toLowerCase();
+    const okSearch = hayTexto.includes(search.toLowerCase());
+
+    return okCountry && okProvince && okStatus && okSearch;
+  });
+}, [rows, selectedCountry, selectedProvince, statusFilter, search]);
 
   const selected = filteredRows.find((r) => r.id === selectedId) || filteredRows[0] || null;
 
@@ -375,6 +390,65 @@ export default function App() {
     );
   }
 
+  async function deleteFuneraria(id, nombre) {
+  const ok = window.confirm(`¿Seguro que quieres borrar la funeraria "${nombre}"?`);
+  if (!ok) return;
+
+  const { error } = await supabase
+    .from("crm_funerarias")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    alert(`Error borrando funeraria: ${error.message}`);
+    return;
+  }
+
+  await loadRows();
+}
+
+async function deleteByCountry(country) {
+  if (!country || country === "all") {
+    alert("Selecciona un país concreto para borrar.");
+    return;
+  }
+
+  const ok = window.confirm(`¿Seguro que quieres borrar TODAS las funerarias de ${country}?`);
+  if (!ok) return;
+
+  const { error } = await supabase
+    .from("crm_funerarias")
+    .delete()
+    .eq("pais", country);
+
+  if (error) {
+    alert(`Error borrando país: ${error.message}`);
+    return;
+  }
+
+  await loadRows();
+}
+
+async function deleteAllFunerarias() {
+  const ok = window.confirm("¿Seguro que quieres borrar TODAS las funerarias del CRM?");
+  if (!ok) return;
+
+  const confirmText = window.prompt('Escribe BORRAR para confirmar');
+  if (confirmText !== "BORRAR") return;
+
+  const { error } = await supabase
+    .from("crm_funerarias")
+    .delete()
+    .not("id", "is", null);
+
+  if (error) {
+    alert(`Error borrando todo: ${error.message}`);
+    return;
+  }
+
+  await loadRows();
+}
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -382,21 +456,40 @@ export default function App() {
           <h1>CRM funerarias</h1>
           <p>Conectado a Supabase. Usuario: {session.user.email}</p>
         </div>
-        <div className="topbar-actions">
-          <label className="button secondary file-button">
-            {importing ? "Importando..." : "Importar CSV"}
-            <input type="file" accept=".csv" onChange={handleCsvUpload} disabled={importing} />
-          </label>
-          <button className="button secondary" onClick={exportTrackingCsv}>
-            Exportar CSV
-          </button>
-          <button className="button secondary" onClick={loadRows}>
-            Recargar
-          </button>
-          <button className="button danger" onClick={signOut}>
-            Salir
-          </button>
-        </div>
+
+<div className="topbar-actions">
+  <label className="button secondary file-button">
+    {importing ? "Importando..." : "Importar CSV"}
+    <input type="file" accept=".csv" onChange={handleCsvUpload} disabled={importing} />
+  </label>
+
+  <button className="button secondary" onClick={exportTrackingCsv}>
+    Exportar CSV
+  </button>
+
+  <button className="button secondary" onClick={loadRows}>
+    Recargar
+  </button>
+
+  <button
+    className="button danger"
+    onClick={() => deleteByCountry(selectedCountry)}
+  >
+    Borrar país
+  </button>
+
+  <button
+    className="button danger"
+    onClick={deleteAllFunerarias}
+  >
+    Borrar todo
+  </button>
+
+  <button className="button danger" onClick={signOut}>
+    Salir
+  </button>
+</div>
+        
       </header>
 
       <section className="stats-grid">
@@ -406,36 +499,50 @@ export default function App() {
         <div className="stat-card"><span>No interesadas</span><strong>{stats.noInteresadas}</strong></div>
       </section>
 
-      <section className="filters-card">
-        <input
-          className="input"
-          placeholder="Buscar por nombre, email, web o teléfono"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+     <section className="filters-card filters-card-4">
+  <input
+    className="input"
+    placeholder="Buscar por nombre, email, web o teléfono"
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+  />
 
-        <select
-          className="input"
-          value={selectedProvince}
-          onChange={(e) => setSelectedProvince(e.target.value)}
-        >
-          <option value="all">Todas las provincias</option>
-          {provinces.map((province) => (
-            <option key={province} value={province}>{province}</option>
-          ))}
-        </select>
+  <select
+    className="input"
+    value={selectedCountry}
+    onChange={(e) => {
+      setSelectedCountry(e.target.value);
+      setSelectedProvince("all");
+    }}
+  >
+    <option value="all">Todos los países</option>
+    {countries.map((country) => (
+      <option key={country} value={country}>{country}</option>
+    ))}
+  </select>
 
-        <select
-          className="input"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value="all">Todos los estados</option>
-          <option value="no_contactada">No contactada</option>
-          <option value="contactada">Contactada</option>
-          <option value="descartada">No interesada</option>
-        </select>
-      </section>
+  <select
+    className="input"
+    value={selectedProvince}
+    onChange={(e) => setSelectedProvince(e.target.value)}
+  >
+    <option value="all">Todas las provincias</option>
+    {provinces.map((province) => (
+      <option key={province} value={province}>{province}</option>
+    ))}
+  </select>
+
+  <select
+    className="input"
+    value={statusFilter}
+    onChange={(e) => setStatusFilter(e.target.value)}
+  >
+    <option value="all">Todos los estados</option>
+    <option value="no_contactada">No contactada</option>
+    <option value="contactada">Contactada</option>
+    <option value="descartada">No interesada</option>
+  </select>
+</section>
 
       <main className="content-grid">
         <section className="panel list-panel">
@@ -489,14 +596,26 @@ export default function App() {
             <div className="empty-state">Selecciona una funeraria del listado.</div>
           ) : (
             <div className="detail-body">
+              
               <div className="hero-card">
-                <h3>{selected.nombre}</h3>
-                <p>
-                  {selected.ciudad || "Sin ciudad"}
-                  {selected.provincia_estado ? ` · ${selected.provincia_estado}` : ""}
-                  {selected.pais ? ` · ${selected.pais}` : ""}
-                </p>
-              </div>
+  <div className="hero-card-top">
+    <div>
+      <h3>{selected.nombre}</h3>
+      <p>
+        {selected.ciudad || "Sin ciudad"}
+        {selected.provincia_estado ? ` · ${selected.provincia_estado}` : ""}
+        {selected.pais ? ` · ${selected.pais}` : ""}
+      </p>
+    </div>
+
+    <button
+      className="button danger"
+      onClick={() => deleteFuneraria(selected.id, selected.nombre)}
+    >
+      Borrar funeraria
+    </button>
+  </div>
+</div>
 
               <div className="info-grid">
                 <div className="info-box"><span>Email</span><strong>{selected.email || "No disponible"}</strong></div>
