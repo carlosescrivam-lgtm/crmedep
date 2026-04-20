@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "./supabaseClient";
 
+
+
 function normalizeHeader(value) {
   return String(value || "")
     .trim()
@@ -63,21 +65,24 @@ function csvToRows(csv) {
   const idx = {
     nombre: headers.findIndex((h) => ["nombre", "nombre empresa", "empresa"].includes(h)),
     direccion: headers.findIndex((h) => ["direccion", "dirección"].includes(h)),
+    pais: headers.findIndex((h) => ["pais", "país"].includes(h)),
     ciudad: headers.findIndex((h) => ["ciudad"].includes(h)),
     provincia: headers.findIndex((h) => ["provincia/estado", "provincia", "estado"].includes(h)),
     codigo_postal: headers.findIndex((h) => ["codigo postal", "código postal", "cp"].includes(h)),
     telefono: headers.findIndex((h) => ["telefono", "teléfono", "phone"].includes(h)),
     email: headers.findIndex((h) => ["email", "correo", "correo electronico", "e-mail"].includes(h)),
     web: headers.findIndex((h) => ["web", "website", "sitio web", "url"].includes(h)),
+    
   };
 
   return lines
     .slice(1)
     .map((line) => {
-      const cols = parseCsvLine(line, delimiter);
+      const cols = line.includes(";") ? line.split(";") : line.split(",");
       return {
         nombre: idx.nombre >= 0 ? cols[idx.nombre] || "" : "",
         direccion: idx.direccion >= 0 ? cols[idx.direccion] || "" : "",
+         pais: idx.pais >= 0 ? cols[idx.pais] || "" : "",
         ciudad: idx.ciudad >= 0 ? cols[idx.ciudad] || "" : "",
         provincia_estado: idx.provincia >= 0 ? cols[idx.provincia] || "" : "",
         codigo_postal: idx.codigo_postal >= 0 ? cols[idx.codigo_postal] || "" : "",
@@ -166,7 +171,17 @@ export default function App() {
   const [selectedId, setSelectedId] = useState(null);
 
   const [importing, setImporting] = useState(false);
-
+  const [isCreating, setIsCreating] = useState(false);
+  const [newFuneraria, setNewFuneraria] = useState({
+    nombre: "",
+    direccion: "",
+    pais: "España",
+    ciudad: "",
+    provincia_estado: "",
+    telefono: "",
+    email: "",
+    web: "",
+  });
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session ?? null);
@@ -295,7 +310,8 @@ const countries = useMemo(
   if (!file) return;
 
   const origen = window.prompt("Nombre del origen/importación", file.name) || file.name;
-  const pais = window.prompt("País para esta importación", "Argentina") || "Argentina";
+  const paisDefault =
+  window.prompt("País por defecto (si el CSV no lo trae)", "España") || "España";
 
   const text = await file.text();
   const imported = csvToRows(text);
@@ -325,7 +341,7 @@ const countries = useMemo(
         telefono: row.telefono || null,
         email: row.email || null,
         web: row.web || null,
-        pais: pais || "Argentina",
+        pais: row.pais || paisDefault,
         origen: origen || file.name,
         dedupe_key,
       };
@@ -389,6 +405,65 @@ const countries = useMemo(
       </div>
     );
   }
+
+  async function createFuneraria() {
+  if (!newFuneraria.nombre.trim()) {
+    alert("El nombre es obligatorio");
+    return;
+  }
+
+  const dedupe_key = [
+    newFuneraria.nombre?.trim()?.toLowerCase() || "",
+    newFuneraria.ciudad?.trim()?.toLowerCase() || "",
+    newFuneraria.provincia_estado?.trim()?.toLowerCase() || "",
+    newFuneraria.telefono?.trim()?.toLowerCase() || "",
+  ].join("|");
+
+  const payload = {
+    nombre: newFuneraria.nombre || null,
+    direccion: newFuneraria.direccion || null,
+    pais: newFuneraria.pais || "España",
+    ciudad: newFuneraria.ciudad || null,
+    provincia_estado: newFuneraria.provincia_estado || null,
+    telefono: newFuneraria.telefono || null,
+    email: newFuneraria.email || null,
+    web: newFuneraria.web || null,
+    estado_contacto: "no_contactada",
+    demo: "no_hecha",
+    interes: "pendiente",
+    dedupe_key,
+    origen: "Alta manual CRM",
+  };
+
+  const { data, error } = await supabase
+    .from("crm_funerarias")
+    .insert(payload)
+    .select()
+    .single();
+
+  if (error) {
+    alert(`Error creando funeraria: ${error.message}`);
+    return;
+  }
+
+  setIsCreating(false);
+  setNewFuneraria({
+    nombre: "",
+    direccion: "",
+    pais: "España",
+    ciudad: "",
+    provincia_estado: "",
+    telefono: "",
+    email: "",
+    web: "",
+  });
+
+  await loadRows();
+
+  if (data?.id) {
+    setSelectedId(data.id);
+  }
+}
 
   async function deleteFuneraria(id, nombre) {
   const ok = window.confirm(`¿Seguro que quieres borrar la funeraria "${nombre}"?`);
@@ -488,6 +563,14 @@ async function deleteAllFunerarias() {
   <button className="button danger" onClick={signOut}>
     Salir
   </button>
+
+<button
+  className="button secondary"
+  onClick={() => setIsCreating(true)}
+>
+  Añadir funeraria
+</button>
+
 </div>
         
       </header>
@@ -592,9 +675,121 @@ async function deleteAllFunerarias() {
         <section className="panel detail-panel">
           <div className="panel-header"><h2>Ficha</h2></div>
 
-          {!selected ? (
-            <div className="empty-state">Selecciona una funeraria del listado.</div>
-          ) : (
+         {isCreating ? (
+  <div className="detail-body">
+    <div className="hero-card">
+      <div className="hero-card-top">
+        <div>
+          <h3>Nueva funeraria</h3>
+          <p>Alta manual desde CRM</p>
+        </div>
+      </div>
+    </div>
+
+    <div className="form-grid">
+      <div>
+        <label>Nombre</label>
+        <input
+          className="input"
+          value={newFuneraria.nombre}
+          onChange={(e) => setNewFuneraria({ ...newFuneraria, nombre: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <label>País</label>
+        <input
+          className="input"
+          value={newFuneraria.pais}
+          onChange={(e) => setNewFuneraria({ ...newFuneraria, pais: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <label>Ciudad</label>
+        <input
+          className="input"
+          value={newFuneraria.ciudad}
+          onChange={(e) => setNewFuneraria({ ...newFuneraria, ciudad: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <label>Provincia/Estado</label>
+        <input
+          className="input"
+          value={newFuneraria.provincia_estado}
+          onChange={(e) => setNewFuneraria({ ...newFuneraria, provincia_estado: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <label>Teléfono</label>
+        <input
+          className="input"
+          value={newFuneraria.telefono}
+          onChange={(e) => setNewFuneraria({ ...newFuneraria, telefono: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <label>Email</label>
+        <input
+          className="input"
+          value={newFuneraria.email}
+          onChange={(e) => setNewFuneraria({ ...newFuneraria, email: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <label>Web</label>
+        <input
+          className="input"
+          value={newFuneraria.web}
+          onChange={(e) => setNewFuneraria({ ...newFuneraria, web: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <label>Dirección</label>
+        <input
+          className="input"
+          value={newFuneraria.direccion}
+          onChange={(e) => setNewFuneraria({ ...newFuneraria, direccion: e.target.value })}
+        />
+      </div>
+    </div>
+
+    <div className="topbar-actions">
+      <button className="button" onClick={createFuneraria}>
+        Guardar nueva funeraria
+      </button>
+
+      <button
+        className="button secondary"
+        onClick={() => {
+          setIsCreating(false);
+          setNewFuneraria({
+            nombre: "",
+            direccion: "",
+            pais: "España",
+            ciudad: "",
+            provincia_estado: "",
+            telefono: "",
+            email: "",
+            web: "",
+          });
+        }}
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+) : !selected ? (
+  <div className="empty-state">Selecciona una funeraria del listado.</div>
+) : (
+
+
             <div className="detail-body">
               
               <div className="hero-card">
