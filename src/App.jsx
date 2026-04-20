@@ -154,6 +154,39 @@ function downloadFile(filename, content, type) {
   URL.revokeObjectURL(url);
 }
 
+
+
+export default function App() {
+  const [session, setSession] = useState(null);
+  const [loadingAuth, setLoadingAuth] = useState(true);
+
+  const [emailLogin, setEmailLogin] = useState("");
+  const [passwordLogin, setPasswordLogin] = useState("");
+
+  const [rows, setRows] = useState([]);
+  const [loadingRows, setLoadingRows] = useState(false);
+
+  const [selectedProvince, setSelectedProvince] = useState("all");
+  const [selectedCountry, setSelectedCountry] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [search, setSearch] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+const [editDraft, setEditDraft] = useState(null);
+
+  const [importing, setImporting] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [newFuneraria, setNewFuneraria] = useState({
+    nombre: "",
+    direccion: "",
+    pais: "España",
+    ciudad: "",
+    provincia_estado: "",
+    telefono: "",
+    email: "",
+    web: "",
+  });
+
 function startEditing(funeraria) {
   setIsEditing(true);
   setEditDraft({
@@ -206,36 +239,6 @@ async function saveFunerariaDatos(id) {
   setEditDraft(null);
 }
 
-export default function App() {
-  const [session, setSession] = useState(null);
-  const [loadingAuth, setLoadingAuth] = useState(true);
-
-  const [emailLogin, setEmailLogin] = useState("");
-  const [passwordLogin, setPasswordLogin] = useState("");
-
-  const [rows, setRows] = useState([]);
-  const [loadingRows, setLoadingRows] = useState(false);
-
-  const [selectedProvince, setSelectedProvince] = useState("all");
-  const [selectedCountry, setSelectedCountry] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [search, setSearch] = useState("");
-  const [selectedId, setSelectedId] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-const [editDraft, setEditDraft] = useState(null);
-
-  const [importing, setImporting] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-  const [newFuneraria, setNewFuneraria] = useState({
-    nombre: "",
-    direccion: "",
-    pais: "España",
-    ciudad: "",
-    provincia_estado: "",
-    telefono: "",
-    email: "",
-    web: "",
-  });
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session ?? null);
