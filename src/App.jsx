@@ -386,13 +386,13 @@ const countries = useMemo(
 
   try {
     const rowsToUpsert = imported.map((row) => {
-    const dedupe_key = [
-  (valorNombre || "").trim().toLowerCase(),
-  (valorPais || "").trim().toLowerCase(),
-  (valorCiudad || "").trim().toLowerCase(),
-  (valorProvincia || "").trim().toLowerCase(),
-  (valorTelefono || "").trim().toLowerCase(),
-  (valorDireccion || "").trim().toLowerCase(),
+const dedupe_key = [
+  row.nombre?.trim()?.toLowerCase() || "",
+  row.pais?.trim()?.toLowerCase() || "",
+  row.ciudad?.trim()?.toLowerCase() || "",
+  row.provincia_estado?.trim()?.toLowerCase() || "",
+  row.telefono?.trim()?.toLowerCase() || "",
+  row.direccion?.trim()?.toLowerCase() || "",
 ].join("|");
 
       return {
