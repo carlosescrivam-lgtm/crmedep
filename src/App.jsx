@@ -209,14 +209,14 @@ function cancelEditing() {
 async function saveFunerariaDatos(id) {
   if (!editDraft) return;
 
-const dedupe_key = [
-  row.nombre?.trim()?.toLowerCase() || "",
-  row.pais?.trim()?.toLowerCase() || "",
-  row.ciudad?.trim()?.toLowerCase() || "",
-  row.provincia_estado?.trim()?.toLowerCase() || "",
-  row.telefono?.trim()?.toLowerCase() || "",
-  row.direccion?.trim()?.toLowerCase() || "",
-].join("|");
+  const dedupe_key = [
+    editDraft.nombre?.trim()?.toLowerCase() || "",
+    editDraft.pais?.trim()?.toLowerCase() || "",
+    editDraft.ciudad?.trim()?.toLowerCase() || "",
+    editDraft.provincia_estado?.trim()?.toLowerCase() || "",
+    editDraft.telefono?.trim()?.toLowerCase() || "",
+    editDraft.direccion?.trim()?.toLowerCase() || "",
+  ].join("|");
 
   const finalPatch = {
     ...editDraft,
@@ -255,6 +255,11 @@ const dedupe_key = [
 
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+  setIsEditing(false);
+  setEditDraft(null);
+}, [selectedId]);
 
   async function signIn(e) {
     e.preventDefault();
@@ -705,7 +710,11 @@ async function deleteAllFunerarias() {
               <button
                 key={row.id}
                 className={`lead-card ${selected?.id === row.id ? "selected" : ""}`}
-                onClick={() => setSelectedId(row.id)}
+                onClick={() => {
+  setIsEditing(false);
+  setEditDraft(null);
+  setSelectedId(row.id);
+}}
               >
                 <div className="lead-top">
                   <div>
@@ -832,19 +841,12 @@ async function deleteAllFunerarias() {
 
       <button
         className="button secondary"
-        onClick={() => {
-          setIsCreating(false);
-          setNewFuneraria({
-            nombre: "",
-            direccion: "",
-            pais: "España",
-            ciudad: "",
-            provincia_estado: "",
-            telefono: "",
-            email: "",
-            web: "",
-          });
-        }}
+       onClick={() => {
+  setIsEditing(false);
+  setEditDraft(null);
+  setSelectedId(row.id);
+}}
+        
       >
         Cancelar
       </button>
