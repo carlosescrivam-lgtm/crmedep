@@ -210,6 +210,34 @@ export default function App() {
     await supabase.auth.signOut();
   }
 
+  async function saveFunerariaDatos(id, patch) {
+  const dedupe_key = [
+    (patch.nombre ?? selected?.nombre ?? "").trim().toLowerCase(),
+    (patch.ciudad ?? selected?.ciudad ?? "").trim().toLowerCase(),
+    (patch.provincia_estado ?? selected?.provincia_estado ?? "").trim().toLowerCase(),
+    (patch.telefono ?? selected?.telefono ?? "").trim().toLowerCase(),
+  ].join("|");
+
+  const finalPatch = {
+    ...patch,
+    dedupe_key,
+  };
+
+  const { error } = await supabase
+    .from("crm_funerarias")
+    .update(finalPatch)
+    .eq("id", id);
+
+  if (error) {
+    alert(`Error guardando datos: ${error.message}`);
+    return;
+  }
+
+  setRows((prev) =>
+    prev.map((r) => (r.id === id ? { ...r, ...finalPatch } : r))
+  );
+}
+
   async function loadRows() {
     setLoadingRows(true);
     const { data, error } = await supabase
@@ -812,12 +840,135 @@ async function deleteAllFunerarias() {
   </div>
 </div>
 
-              <div className="info-grid">
-                <div className="info-box"><span>Email</span><strong>{selected.email || "No disponible"}</strong></div>
-                <div className="info-box"><span>Web</span><strong>{selected.web || "No disponible"}</strong></div>
-                <div className="info-box"><span>Teléfono</span><strong>{selected.telefono || "No disponible"}</strong></div>
-                <div className="info-box"><span>Dirección</span><strong>{selected.direccion || "No disponible"}</strong></div>
-              </div>
+            <div className="form-grid">
+  <div>
+    <label>Nombre</label>
+    <input
+      className="input"
+      value={selected.nombre || ""}
+      onChange={(e) =>
+        setRows((prev) =>
+          prev.map((r) =>
+            r.id === selected.id ? { ...r, nombre: e.target.value } : r
+          )
+        )
+      }
+      onBlur={(e) => saveFunerariaDatos(selected.id, { nombre: e.target.value })}
+    />
+  </div>
+
+  <div>
+    <label>País</label>
+    <input
+      className="input"
+      value={selected.pais || ""}
+      onChange={(e) =>
+        setRows((prev) =>
+          prev.map((r) =>
+            r.id === selected.id ? { ...r, pais: e.target.value } : r
+          )
+        )
+      }
+      onBlur={(e) => saveFunerariaDatos(selected.id, { pais: e.target.value })}
+    />
+  </div>
+
+  <div>
+    <label>Ciudad</label>
+    <input
+      className="input"
+      value={selected.ciudad || ""}
+      onChange={(e) =>
+        setRows((prev) =>
+          prev.map((r) =>
+            r.id === selected.id ? { ...r, ciudad: e.target.value } : r
+          )
+        )
+      }
+      onBlur={(e) => saveFunerariaDatos(selected.id, { ciudad: e.target.value })}
+    />
+  </div>
+
+  <div>
+    <label>Provincia/Estado</label>
+    <input
+      className="input"
+      value={selected.provincia_estado || ""}
+      onChange={(e) =>
+        setRows((prev) =>
+          prev.map((r) =>
+            r.id === selected.id ? { ...r, provincia_estado: e.target.value } : r
+          )
+        )
+      }
+      onBlur={(e) => saveFunerariaDatos(selected.id, { provincia_estado: e.target.value })}
+    />
+  </div>
+
+  <div>
+    <label>Teléfono</label>
+    <input
+      className="input"
+      value={selected.telefono || ""}
+      onChange={(e) =>
+        setRows((prev) =>
+          prev.map((r) =>
+            r.id === selected.id ? { ...r, telefono: e.target.value } : r
+          )
+        )
+      }
+      onBlur={(e) => saveFunerariaDatos(selected.id, { telefono: e.target.value })}
+    />
+  </div>
+
+  <div>
+    <label>Email</label>
+    <input
+      className="input"
+      value={selected.email || ""}
+      onChange={(e) =>
+        setRows((prev) =>
+          prev.map((r) =>
+            r.id === selected.id ? { ...r, email: e.target.value } : r
+          )
+        )
+      }
+      onBlur={(e) => saveFunerariaDatos(selected.id, { email: e.target.value })}
+    />
+  </div>
+
+  <div>
+    <label>Web</label>
+    <input
+      className="input"
+      value={selected.web || ""}
+      onChange={(e) =>
+        setRows((prev) =>
+          prev.map((r) =>
+            r.id === selected.id ? { ...r, web: e.target.value } : r
+          )
+        )
+      }
+      onBlur={(e) => saveFunerariaDatos(selected.id, { web: e.target.value })}
+    />
+  </div>
+
+  <div>
+    <label>Dirección</label>
+    <input
+      className="input"
+      value={selected.direccion || ""}
+      onChange={(e) =>
+        setRows((prev) =>
+          prev.map((r) =>
+            r.id === selected.id ? { ...r, direccion: e.target.value } : r
+          )
+        )
+      }
+      onBlur={(e) => saveFunerariaDatos(selected.id, { direccion: e.target.value })}
+    />
+  </div>
+</div>
 
               <div className="form-grid">
                 <div>
