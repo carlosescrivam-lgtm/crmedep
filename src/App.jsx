@@ -209,12 +209,14 @@ function cancelEditing() {
 async function saveFunerariaDatos(id) {
   if (!editDraft) return;
 
-  const dedupe_key = [
-    (editDraft.nombre || "").trim().toLowerCase(),
-    (editDraft.ciudad || "").trim().toLowerCase(),
-    (editDraft.provincia_estado || "").trim().toLowerCase(),
-    (editDraft.telefono || "").trim().toLowerCase(),
-  ].join("|");
+const dedupe_key = [
+  row.nombre?.trim()?.toLowerCase() || "",
+  row.pais?.trim()?.toLowerCase() || "",
+  row.ciudad?.trim()?.toLowerCase() || "",
+  row.provincia_estado?.trim()?.toLowerCase() || "",
+  row.telefono?.trim()?.toLowerCase() || "",
+  row.direccion?.trim()?.toLowerCase() || "",
+].join("|");
 
   const finalPatch = {
     ...editDraft,
@@ -384,12 +386,14 @@ const countries = useMemo(
 
   try {
     const rowsToUpsert = imported.map((row) => {
-      const dedupe_key = [
-        row.nombre?.trim()?.toLowerCase() || "",
-        row.ciudad?.trim()?.toLowerCase() || "",
-        row.provincia_estado?.trim()?.toLowerCase() || "",
-        row.telefono?.trim()?.toLowerCase() || "",
-      ].join("|");
+    const dedupe_key = [
+  (valorNombre || "").trim().toLowerCase(),
+  (valorPais || "").trim().toLowerCase(),
+  (valorCiudad || "").trim().toLowerCase(),
+  (valorProvincia || "").trim().toLowerCase(),
+  (valorTelefono || "").trim().toLowerCase(),
+  (valorDireccion || "").trim().toLowerCase(),
+].join("|");
 
       return {
         nombre: row.nombre || null,
@@ -472,11 +476,13 @@ const countries = useMemo(
   }
 
   const dedupe_key = [
-    newFuneraria.nombre?.trim()?.toLowerCase() || "",
-    newFuneraria.ciudad?.trim()?.toLowerCase() || "",
-    newFuneraria.provincia_estado?.trim()?.toLowerCase() || "",
-    newFuneraria.telefono?.trim()?.toLowerCase() || "",
-  ].join("|");
+  (valorNombre || "").trim().toLowerCase(),
+  (valorPais || "").trim().toLowerCase(),
+  (valorCiudad || "").trim().toLowerCase(),
+  (valorProvincia || "").trim().toLowerCase(),
+  (valorTelefono || "").trim().toLowerCase(),
+  (valorDireccion || "").trim().toLowerCase(),
+].join("|");
 
   const payload = {
     nombre: newFuneraria.nombre || null,
