@@ -154,6 +154,58 @@ function downloadFile(filename, content, type) {
   URL.revokeObjectURL(url);
 }
 
+function startEditing(funeraria) {
+  setIsEditing(true);
+  setEditDraft({
+    nombre: funeraria.nombre || "",
+    direccion: funeraria.direccion || "",
+    pais: funeraria.pais || "",
+    ciudad: funeraria.ciudad || "",
+    provincia_estado: funeraria.provincia_estado || "",
+    telefono: funeraria.telefono || "",
+    email: funeraria.email || "",
+    web: funeraria.web || "",
+  });
+}
+
+function cancelEditing() {
+  setIsEditing(false);
+  setEditDraft(null);
+}
+
+async function saveFunerariaDatos(id) {
+  if (!editDraft) return;
+
+  const dedupe_key = [
+    (editDraft.nombre || "").trim().toLowerCase(),
+    (editDraft.ciudad || "").trim().toLowerCase(),
+    (editDraft.provincia_estado || "").trim().toLowerCase(),
+    (editDraft.telefono || "").trim().toLowerCase(),
+  ].join("|");
+
+  const finalPatch = {
+    ...editDraft,
+    dedupe_key,
+  };
+
+  const { error } = await supabase
+    .from("crm_funerarias")
+    .update(finalPatch)
+    .eq("id", id);
+
+  if (error) {
+    alert(`Error guardando datos: ${error.message}`);
+    return;
+  }
+
+  setRows((prev) =>
+    prev.map((r) => (r.id === id ? { ...r, ...finalPatch } : r))
+  );
+
+  setIsEditing(false);
+  setEditDraft(null);
+}
+
 export default function App() {
   const [session, setSession] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
@@ -169,6 +221,8 @@ export default function App() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+const [editDraft, setEditDraft] = useState(null);
 
   const [importing, setImporting] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -840,135 +894,139 @@ async function deleteAllFunerarias() {
   </div>
 </div>
 
-            <div className="form-grid">
-  <div>
-    <label>Nombre</label>
-    <input
-      className="input"
-      value={selected.nombre || ""}
-      onChange={(e) =>
-        setRows((prev) =>
-          prev.map((r) =>
-            r.id === selected.id ? { ...r, nombre: e.target.value } : r
-          )
-        )
-      }
-      onBlur={(e) => saveFunerariaDatos(selected.id, { nombre: e.target.value })}
-    />
-  </div>
+         <div className="hero-card">
+  <div className="hero-card-top">
+    <div>
+      <h3>{selected.nombre}</h3>
+      <p>
+        {selected.ciudad || "Sin ciudad"}
+        {selected.provincia_estado ? ` · ${selected.provincia_estado}` : ""}
+        {selected.pais ? ` · ${selected.pais}` : ""}
+      </p>
+    </div>
 
-  <div>
-    <label>País</label>
-    <input
-      className="input"
-      value={selected.pais || ""}
-      onChange={(e) =>
-        setRows((prev) =>
-          prev.map((r) =>
-            r.id === selected.id ? { ...r, pais: e.target.value } : r
-          )
-        )
-      }
-      onBlur={(e) => saveFunerariaDatos(selected.id, { pais: e.target.value })}
-    />
-  </div>
+    <div className="topbar-actions">
+      {!isEditing ? (
+        <button
+          className="button secondary"
+          onClick={() => startEditing(selected)}
+        >
+          Editar
+        </button>
+      ) : (
+        <>
+          <button
+            className="button"
+            onClick={() => saveFunerariaDatos(selected.id)}
+          >
+            Guardar cambios
+          </button>
+          <button
+            className="button secondary"
+            onClick={cancelEditing}
+          >
+            Cancelar
+          </button>
+        </>
+      )}
 
-  <div>
-    <label>Ciudad</label>
-    <input
-      className="input"
-      value={selected.ciudad || ""}
-      onChange={(e) =>
-        setRows((prev) =>
-          prev.map((r) =>
-            r.id === selected.id ? { ...r, ciudad: e.target.value } : r
-          )
-        )
-      }
-      onBlur={(e) => saveFunerariaDatos(selected.id, { ciudad: e.target.value })}
-    />
-  </div>
-
-  <div>
-    <label>Provincia/Estado</label>
-    <input
-      className="input"
-      value={selected.provincia_estado || ""}
-      onChange={(e) =>
-        setRows((prev) =>
-          prev.map((r) =>
-            r.id === selected.id ? { ...r, provincia_estado: e.target.value } : r
-          )
-        )
-      }
-      onBlur={(e) => saveFunerariaDatos(selected.id, { provincia_estado: e.target.value })}
-    />
-  </div>
-
-  <div>
-    <label>Teléfono</label>
-    <input
-      className="input"
-      value={selected.telefono || ""}
-      onChange={(e) =>
-        setRows((prev) =>
-          prev.map((r) =>
-            r.id === selected.id ? { ...r, telefono: e.target.value } : r
-          )
-        )
-      }
-      onBlur={(e) => saveFunerariaDatos(selected.id, { telefono: e.target.value })}
-    />
-  </div>
-
-  <div>
-    <label>Email</label>
-    <input
-      className="input"
-      value={selected.email || ""}
-      onChange={(e) =>
-        setRows((prev) =>
-          prev.map((r) =>
-            r.id === selected.id ? { ...r, email: e.target.value } : r
-          )
-        )
-      }
-      onBlur={(e) => saveFunerariaDatos(selected.id, { email: e.target.value })}
-    />
-  </div>
-
-  <div>
-    <label>Web</label>
-    <input
-      className="input"
-      value={selected.web || ""}
-      onChange={(e) =>
-        setRows((prev) =>
-          prev.map((r) =>
-            r.id === selected.id ? { ...r, web: e.target.value } : r
-          )
-        )
-      }
-      onBlur={(e) => saveFunerariaDatos(selected.id, { web: e.target.value })}
-    />
-  </div>
-
-  <div>
-    <label>Dirección</label>
-    <input
-      className="input"
-      value={selected.direccion || ""}
-      onChange={(e) =>
-        setRows((prev) =>
-          prev.map((r) =>
-            r.id === selected.id ? { ...r, direccion: e.target.value } : r
-          )
-        )
-      }
-      onBlur={(e) => saveFunerariaDatos(selected.id, { direccion: e.target.value })}
-    />
+      <button
+        className="button danger"
+        onClick={() => deleteFuneraria(selected.id, selected.nombre)}
+      >
+        Borrar funeraria
+      </button>
+    </div>
   </div>
 </div>
+
+{!isEditing ? (
+  <div className="info-grid">
+    <div className="info-box"><span>Nombre</span><strong>{selected.nombre || "No disponible"}</strong></div>
+    <div className="info-box"><span>País</span><strong>{selected.pais || "No disponible"}</strong></div>
+    <div className="info-box"><span>Ciudad</span><strong>{selected.ciudad || "No disponible"}</strong></div>
+    <div className="info-box"><span>Provincia/Estado</span><strong>{selected.provincia_estado || "No disponible"}</strong></div>
+    <div className="info-box"><span>Teléfono</span><strong>{selected.telefono || "No disponible"}</strong></div>
+    <div className="info-box"><span>Email</span><strong>{selected.email || "No disponible"}</strong></div>
+    <div className="info-box"><span>Web</span><strong>{selected.web || "No disponible"}</strong></div>
+    <div className="info-box"><span>Dirección</span><strong>{selected.direccion || "No disponible"}</strong></div>
+  </div>
+) : (
+  <div className="form-grid">
+    <div>
+      <label>Nombre</label>
+      <input
+        className="input"
+        value={editDraft?.nombre || ""}
+        onChange={(e) => setEditDraft({ ...editDraft, nombre: e.target.value })}
+      />
+    </div>
+
+    <div>
+      <label>País</label>
+      <input
+        className="input"
+        value={editDraft?.pais || ""}
+        onChange={(e) => setEditDraft({ ...editDraft, pais: e.target.value })}
+      />
+    </div>
+
+    <div>
+      <label>Ciudad</label>
+      <input
+        className="input"
+        value={editDraft?.ciudad || ""}
+        onChange={(e) => setEditDraft({ ...editDraft, ciudad: e.target.value })}
+      />
+    </div>
+
+    <div>
+      <label>Provincia/Estado</label>
+      <input
+        className="input"
+        value={editDraft?.provincia_estado || ""}
+        onChange={(e) => setEditDraft({ ...editDraft, provincia_estado: e.target.value })}
+      />
+    </div>
+
+    <div>
+      <label>Teléfono</label>
+      <input
+        className="input"
+        value={editDraft?.telefono || ""}
+        onChange={(e) => setEditDraft({ ...editDraft, telefono: e.target.value })}
+      />
+    </div>
+
+    <div>
+      <label>Email</label>
+      <input
+        className="input"
+        value={editDraft?.email || ""}
+        onChange={(e) => setEditDraft({ ...editDraft, email: e.target.value })}
+      />
+    </div>
+
+    <div>
+      <label>Web</label>
+      <input
+        className="input"
+        value={editDraft?.web || ""}
+        onChange={(e) => setEditDraft({ ...editDraft, web: e.target.value })}
+      />
+    </div>
+
+    <div>
+      <label>Dirección</label>
+      <input
+        className="input"
+        value={editDraft?.direccion || ""}
+        onChange={(e) => setEditDraft({ ...editDraft, direccion: e.target.value })}
+      />
+    </div>
+  </div>
+)}
+
 
               <div className="form-grid">
                 <div>
