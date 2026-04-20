@@ -264,33 +264,7 @@ const [editDraft, setEditDraft] = useState(null);
     await supabase.auth.signOut();
   }
 
-  async function saveFunerariaDatos(id, patch) {
-  const dedupe_key = [
-    (patch.nombre ?? selected?.nombre ?? "").trim().toLowerCase(),
-    (patch.ciudad ?? selected?.ciudad ?? "").trim().toLowerCase(),
-    (patch.provincia_estado ?? selected?.provincia_estado ?? "").trim().toLowerCase(),
-    (patch.telefono ?? selected?.telefono ?? "").trim().toLowerCase(),
-  ].join("|");
-
-  const finalPatch = {
-    ...patch,
-    dedupe_key,
-  };
-
-  const { error } = await supabase
-    .from("crm_funerarias")
-    .update(finalPatch)
-    .eq("id", id);
-
-  if (error) {
-    alert(`Error guardando datos: ${error.message}`);
-    return;
-  }
-
-  setRows((prev) =>
-    prev.map((r) => (r.id === id ? { ...r, ...finalPatch } : r))
-  );
-}
+  
 
   async function loadRows() {
     setLoadingRows(true);
@@ -874,25 +848,7 @@ async function deleteAllFunerarias() {
 
             <div className="detail-body">
               
-              <div className="hero-card">
-  <div className="hero-card-top">
-    <div>
-      <h3>{selected.nombre}</h3>
-      <p>
-        {selected.ciudad || "Sin ciudad"}
-        {selected.provincia_estado ? ` · ${selected.provincia_estado}` : ""}
-        {selected.pais ? ` · ${selected.pais}` : ""}
-      </p>
-    </div>
-
-    <button
-      className="button danger"
-      onClick={() => deleteFuneraria(selected.id, selected.nombre)}
-    >
-      Borrar funeraria
-    </button>
-  </div>
-</div>
+            
 
          <div className="hero-card">
   <div className="hero-card-top">
