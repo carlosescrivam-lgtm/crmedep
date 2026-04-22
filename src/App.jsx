@@ -165,7 +165,8 @@ export default function App() {
 
   const [rows, setRows] = useState([]);
   const [loadingRows, setLoadingRows] = useState(false);
-
+const [showScript, setShowScript] = useState(false);
+const [scriptSection, setScriptSection] = useState("apertura");
   const [selectedProvince, setSelectedProvince] = useState("all");
   const [selectedCountry, setSelectedCountry] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -186,6 +187,81 @@ const [editDraft, setEditDraft] = useState(null);
     email: "",
     web: "",
   });
+
+  const speechSections = {
+  apertura: {
+    titulo: "Apertura",
+    texto: `Hola, soy Pablo/Carlos Escriva de E-dep. Hablo con Funeraria XXX?
+
+Que tal? Buenos dias. No se si eres tú el/la gerente o el/la responsable de compras... 
+
+SI RESPONDE NO.. Me harías el favor de pasarme con él? 
+SI RESPONDE Esta ocupado o no está... Me podrías decir, por favor cuando sería buen momento para llamarle?
+Si responde SI....
+
+No sé si ahora es buen momento, pero en un minuto te explico la idea y ves si puede encajaros.
+
+Mira, Te llamo porque estamos trabajando con una nueva herramienta pensada para las familias y ofrecida por vosotros, las empresas funerarias, y ofrece un libro de condolencias digital, supersencillo, automatizado y personalizado.
+
+`
+  },
+  explicacion: {
+    titulo: "Explicación breve",
+    texto: `La idea es dar a las familias un servicio adicional, moderno y muy fácil de usar, para que puedan recibir mensajes de condolencia de familiares y amigos aunque no estén cerca. Y sobre todo a todos aquellos que quieren dejar una muestra de cariño pero tampoco tienen tanta confianza como para acercarse al tanatorio..
+
+La funeraria lo ofrece como un valor añadido, sin complicarse técnicamente, junto con otros servicios, como esquelas en periodicos... y mejora mucho la experiencia de la familia en un momento delicado. Tienes alguna duda hasta ahora?
+    
+EXPLICACION TECNICA (SOLO SI LA PIDE)
+Cuando os acepten este nuevo servicio, para la aplicacion solo necesitais Nombre del difunto, foto y un texto opcional y el e-mail de contacto donde quieran recibir el Pdf final con todas las condolencias. Se genera la pagina publica en 15 segundos y te devuelve un Enlace y un QR que envías a la familia y es lo que ellos comparten
+En vuestro cuadro de mandos ya teneis todo el control de esa pagina aunque ya no hay que hacer nada mas.
+Lo mejor sería verlo en una demo en unos minutos..`
+
+},
+  
+  objeciones: {
+    titulo: "Objeciones frecuentes",
+    texto: `- "Ahora no es buen momento"
+  → Sin problema, ¿cuándo te vendría mejor que te lo enseñe en 2 minutos?
+
+- "Ya hacemos algo parecido"
+  → Perfecto, justo por eso quizá podríasis verlo en 2 minutos y comparar una opción más sencilla y centrada en la experiencia de la familia.
+
+- "No creemos que nos lo pidan"
+  → Es normal pensarlo al principio, además esto es nuevo y no se conoce aun...pero precisamente funciona como un servicio diferencial que muchas familias valoran cuando lo conocen. Muchas personas cuando pierden a un familiar ya ponen en sus redes sociales alguna foto para participar su perdida.. Con esto además permiten que la gente les muestre su cariño y tienen todos los mensajes en un mismo sitio y luego lo reciben automaticamente en un PDF que pueden guardar como recuerdo"
+
+- "Envíamelo por email"
+  → Perfecto, te lo mando. ¿A qué correo te lo envío? Te parece si te llamo en unos dias y me dices que te ha parecido y si quieres quedamos para hacerte una demo por videollamada?`
+  },
+  cierre: {
+    titulo: "Cierre",
+    texto: `Lo que te propongo es muy simple: te enseño cómo funciona en una demo muy corta y así valoras si puede encajar en vuestra funeraria.
+
+¿Te va mejor que lo veamos otro día o prefieres que te mande primero la información por email?`
+  },
+
+  precios: {
+  titulo: "Precios",
+  texto: `Trabajamos con un modelo muy sencillo:
+
+- Plan básico: [100 € / mes (30 dias naturales) y hasta 10 servicios disponibles durante ese periodo]
+- Plan profesional: [X € / mes (30 dias naturales)]
+- Plan ilimitado: [200 € / mes (30 dias naturales) y servicios ilimitados durante ese período]
+
+
+Incluye:
+- Libro de condolencias digital personalizado 
+- Acceso al Dashboard para la funeraria con control de todas sus paginas
+- Envío de PDF de forma automática al finalizar el período de prueba
+- Soporte y configuración
+
+Lo importante es que la funeraria puede ofrecerlo como un servicio adicional de valor para la familia. El precio estimado de un servicio es entre 50 y 100€ a vuestra elección
+
+👉 En muchos casos se integra dentro del servicio o incluso se puede repercutir fácilmente.
+Si os registrais ahora, teneis un periodo de 15 dias y 3 servicios totalmente gratis para probarlo y al final de ese período decidis`
+
+
+}
+};
 
 function startEditing(funeraria) {
   setIsEditing(true);
@@ -635,6 +711,8 @@ async function deleteAllFunerarias() {
     Recargar
   </button>
 
+  
+
   <button
     className="button danger"
     onClick={() => deleteByCountry(selectedCountry)}
@@ -1014,6 +1092,52 @@ async function deleteAllFunerarias() {
 )}
 
 
+{showScript && (
+  <div className="script-box">
+    <div className="script-box-top">
+      <h4>Guion de llamada</h4>
+      <div className="script-tabs">
+        <button
+          className={`script-tab ${scriptSection === "apertura" ? "active" : ""}`}
+          onClick={() => setScriptSection("apertura")}
+        >
+          Apertura
+        </button>
+        <button
+          className={`script-tab ${scriptSection === "explicacion" ? "active" : ""}`}
+          onClick={() => setScriptSection("explicacion")}
+        >
+          Explicación
+        </button>
+        <button
+          className={`script-tab ${scriptSection === "objeciones" ? "active" : ""}`}
+          onClick={() => setScriptSection("objeciones")}
+        >
+          Objeciones
+        </button>
+        <button
+          className={`script-tab ${scriptSection === "cierre" ? "active" : ""}`}
+          onClick={() => setScriptSection("cierre")}
+        >
+          Cierre
+        </button>
+
+        <button
+          className={`script-tab ${scriptSection === "precios" ? "active" : ""}`}
+          onClick={() => setScriptSection("precios")}
+        >
+          Precios
+        </button>
+      </div>
+    </div>
+
+    <div className="script-content">
+      <div className="script-title">{speechSections[scriptSection].titulo}</div>
+      <pre className="script-text">{speechSections[scriptSection].texto}</pre>
+    </div>
+  </div>
+)}
+
               <div className="form-grid">
                 <div>
                   <label>Estado de contacto</label>
@@ -1090,7 +1214,20 @@ async function deleteAllFunerarias() {
               </div>
 
               <div>
-                <label>Notas</label>
+
+<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16 }}>
+  <label style={{ margin: 0 }}>Notas</label>
+
+  <button
+    className="button secondary"
+    onClick={() => setShowScript((prev) => !prev)}
+    style={{ padding: "6px 10px", fontSize: 12 }}
+  >
+    {showScript ? "Ocultar guion" : "Guion Comercial"}
+  </button>
+</div>
+
+                
                 <textarea
                   className="textarea"
                   value={selected.notas || ""}

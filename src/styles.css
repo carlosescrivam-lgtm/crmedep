@@ -109,3 +109,60 @@ label { display: block; margin-bottom: 8px; font-weight: 600; }
     flex-direction: column;
   }
 }
+
+.script-box {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background: #f8fafc;
+}
+
+.script-box-top {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.script-box h4 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.script-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.script-tab {
+  border: 1px solid #cbd5e1;
+  background: white;
+  border-radius: 999px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.script-tab.active {
+  background: #0f172a;
+  color: white;
+  border-color: #0f172a;
+}
+
+.script-content {
+  margin-top: 14px;
+}
+
+.script-title {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.script-text {
+  white-space: pre-wrap;
+  font-family: inherit;
+  margin: 0;
+  line-height: 1.5;
+  color: #334155;
+}
