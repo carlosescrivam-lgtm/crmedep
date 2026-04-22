@@ -275,13 +275,20 @@ async function saveFunerariaDatos(id) {
   }
 
   
+async function loadRows() {
+  setLoadingRows(true);
 
-  async function loadRows() {
-    setLoadingRows(true);
+  const pageSize = 1000;
+  let from = 0;
+  let allRows = [];
+  let keepGoing = true;
+
+  while (keepGoing) {
     const { data, error } = await supabase
       .from("crm_funerarias")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .range(from, from + pageSize - 1);
 
     if (error) {
       alert(error.message);
@@ -289,10 +296,22 @@ async function saveFunerariaDatos(id) {
       return;
     }
 
-    setRows(data || []);
-    if (data?.length) setSelectedId((prev) => prev || data[0].id);
-    setLoadingRows(false);
+    allRows = allRows.concat(data || []);
+
+    if (!data || data.length < pageSize) {
+      keepGoing = false;
+    } else {
+      from += pageSize;
+    }
   }
+
+  setRows(allRows);
+  if (allRows.length) {
+    setSelectedId((prev) => prev || allRows[0].id);
+  }
+  setLoadingRows(false);
+}
+
 
   useEffect(() => {
     if (session) loadRows();
