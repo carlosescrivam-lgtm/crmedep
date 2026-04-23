@@ -191,9 +191,9 @@ const [editDraft, setEditDraft] = useState(null);
   const speechSections = {
   apertura: {
     titulo: "Apertura",
-    texto: `Hola, soy Pablo/Carlos Escriva de E-dep. Hablo con Funeraria XXX?
+    texto: `Hola, Buenos dias, soy Pablo/Carlos Escriva de E-dep. Hablo con Funeraria XXX?
 
-Que tal? Buenos dias. No se si eres tú el/la gerente o el/la responsable de compras... 
+Que tal? Encantado. No se si eres tú el/la gerente o el/la responsable de compras... 
 
 SI RESPONDE NO.. Me harías el favor de pasarme con él? 
 SI RESPONDE Esta ocupado o no está... Me podrías decir, por favor cuando sería buen momento para llamarle?
@@ -201,15 +201,15 @@ Si responde SI....
 
 No sé si ahora es buen momento, pero en un minuto te explico la idea y ves si puede encajaros.
 
-Mira, Te llamo porque estamos trabajando con una nueva herramienta pensada para las familias y ofrecida por vosotros, las empresas funerarias, y ofrece un libro de condolencias digital, supersencillo, automatizado y personalizado.
+Mira, Te llamo porque estamos trabajando con una nueva herramienta pensada para las familias y ofrecida por vosotros, las empresas funerarias, y es un libro de condolencias digital, supersencillo, automatizado y personalizado. Funciona a traves de QR Y enlace para compartir en grupos, estados en redes, etc...
 
 `
   },
   explicacion: {
     titulo: "Explicación breve",
-    texto: `La idea es dar a las familias un servicio adicional, moderno y muy fácil de usar, para que puedan recibir mensajes de condolencia de familiares y amigos aunque no estén cerca. Y sobre todo a todos aquellos que quieren dejar una muestra de cariño pero tampoco tienen tanta confianza como para acercarse al tanatorio..
+    texto: `La idea es dar a las familias un servicio adicional, moderno y  superfácil de usar, para que puedan recibir mensajes de condolencia de familiares y amigos aunque no estén cerca. Y sobre todo a todos aquellos que quieren dejar una muestra de cariño pero tampoco tienen tanta confianza como para acercarse al tanatorio..
 
-La funeraria lo ofrece como un valor añadido, sin complicarse técnicamente, junto con otros servicios, como esquelas en periodicos... y mejora mucho la experiencia de la familia en un momento delicado. Tienes alguna duda hasta ahora?
+La funeraria lo ofrece como un servicio mas que da valor añadido, sin complicarse técnicamente, junto con otros servicios, como esquelas en periodicos... y mejora mucho la experiencia de la familia en un momento delicado. Tienes alguna duda hasta ahora?
     
 EXPLICACION TECNICA (SOLO SI LA PIDE)
 Cuando os acepten este nuevo servicio, para la aplicacion solo necesitais Nombre del difunto, foto y un texto opcional y el e-mail de contacto donde quieran recibir el Pdf final con todas las condolencias. Se genera la pagina publica en 15 segundos y te devuelve un Enlace y un QR que envías a la familia y es lo que ellos comparten
@@ -227,7 +227,7 @@ Lo mejor sería verlo en una demo en unos minutos..`
   → Perfecto, justo por eso quizá podríasis verlo en 2 minutos y comparar una opción más sencilla y centrada en la experiencia de la familia.
 
 - "No creemos que nos lo pidan"
-  → Es normal pensarlo al principio, además esto es nuevo y no se conoce aun...pero precisamente funciona como un servicio diferencial que muchas familias valoran cuando lo conocen. Muchas personas cuando pierden a un familiar ya ponen en sus redes sociales alguna foto para participar su perdida.. Con esto además permiten que la gente les muestre su cariño y tienen todos los mensajes en un mismo sitio y luego lo reciben automaticamente en un PDF que pueden guardar como recuerdo"
+  → Es normal pensarlo al principio, además esto es nuevo y no se conoce aun...pero precisamente funciona como un servicio diferencial que las familias que ya lo has usado han valorado mucho. Muchas personas cuando pierden a un familiar ya ponen en sus redes sociales alguna foto para participar su perdida.. Con esto además permiten que la gente les muestre su cariño y tienen todos los mensajes en un mismo sitio y luego lo reciben automaticamente en un PDF que pueden guardar como recuerdo"
 
 - "Envíamelo por email"
   → Perfecto, te lo mando. ¿A qué correo te lo envío? Te parece si te llamo en unos dias y me dices que te ha parecido y si quieres quedamos para hacerte una demo por videollamada?`
@@ -246,7 +246,7 @@ Lo mejor sería verlo en una demo en unos minutos..`
 Si os registrais ahora, teneis un periodo de 15 dias y 3 servicios totalmente gratis para probarlo y al final de ese período decidis uno de los planes en funcion de volumen
 
 - Plan básico: [85€+iva (102,85€) / mes (30 dias naturales) y hasta 10 servicios disponibles durante ese período]
-- Plan profesional: [135€+iva (163,35€) / mes (30 dias naturales) y hasta 10 servicios disponibles durante ese período]
+- Plan profesional: [135€+iva (163,35€) / mes (30 dias naturales) y hasta 20 servicios disponibles durante ese período]
 - Plan ilimitado: [199€+iva (240,80€) / mes (30 dias naturales) y servicios ilimitados durante ese período]
 
 
@@ -256,7 +256,7 @@ Incluye:
 - Envío de PDF de forma automática al finalizar el período de prueba
 - Soporte y configuración
 
-Lo importante es que la funeraria puede ofrecerlo como un servicio adicional de valor para la familia. El precio estimado de un servicio es entre 50 y 100€ a vuestra elección
+Lo importante es que la funeraria puede ofrecerlo como un servicio adicional de valor para la familia. El precio que hemos estimado de un servicio es entre 50 y 100€ a vuestra elección
 
 👉 En muchos casos se integra dentro del servicio aunque se puede repercutir fácilmente.
 `
