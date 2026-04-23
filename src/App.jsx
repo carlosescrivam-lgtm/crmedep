@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "./supabaseClient";
-
+import logoEdep from "./assets/logo-edep.png";
 
 
 function normalizeHeader(value) {
@@ -243,21 +243,23 @@ Lo mejor sería verlo en una demo en unos minutos..`
   titulo: "Precios",
   texto: `Trabajamos con un modelo muy sencillo:
 
-- Plan básico: [100 € / mes (30 dias naturales) y hasta 10 servicios disponibles durante ese periodo]
-- Plan profesional: [X € / mes (30 dias naturales)]
-- Plan ilimitado: [200 € / mes (30 dias naturales) y servicios ilimitados durante ese período]
+Si os registrais ahora, teneis un periodo de 15 dias y 3 servicios totalmente gratis para probarlo y al final de ese período decidis uno de los planes en funcion de volumen
+
+- Plan básico: [85€+iva (102,85€) / mes (30 dias naturales) y hasta 10 servicios disponibles durante ese período]
+- Plan profesional: [135€+iva (163,35€) / mes (30 dias naturales) y hasta 10 servicios disponibles durante ese período]
+- Plan ilimitado: [199€+iva (240,80€) / mes (30 dias naturales) y servicios ilimitados durante ese período]
 
 
 Incluye:
-- Libro de condolencias digital personalizado 
+- Numero de servicios al mes según plan
 - Acceso al Dashboard para la funeraria con control de todas sus paginas
 - Envío de PDF de forma automática al finalizar el período de prueba
 - Soporte y configuración
 
 Lo importante es que la funeraria puede ofrecerlo como un servicio adicional de valor para la familia. El precio estimado de un servicio es entre 50 y 100€ a vuestra elección
 
-👉 En muchos casos se integra dentro del servicio o incluso se puede repercutir fácilmente.
-Si os registrais ahora, teneis un periodo de 15 dias y 3 servicios totalmente gratis para probarlo y al final de ese período decidis`
+👉 En muchos casos se integra dentro del servicio aunque se puede repercutir fácilmente.
+`
 
 
 }
@@ -549,7 +551,14 @@ const dedupe_key = [
   if (!session) {
     return (
       <div style={{ maxWidth: 420, margin: "60px auto", padding: 24 }}>
-        <h1>CRM funerarias</h1>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+  <img
+    src={logoEdep}
+    alt="EDEP"
+    style={{ height: 32, objectFit: "contain" }}
+  />
+  <h1 style={{ margin: 0 }}>CRM</h1>
+</div>
         <p>Inicia sesión</p>
         <form onSubmit={signIn} style={{ display: "grid", gap: 12 }}>
           <input
@@ -693,7 +702,14 @@ async function deleteAllFunerarias() {
     <div className="app-shell">
       <header className="topbar">
         <div>
-          <h1>CRM funerarias</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+  <img
+    src={logoEdep}
+    alt="EDEP"
+    style={{ height: 70, objectFit: "contain" }}
+  />
+  <h1 style={{ margin: 0 }}>CRM</h1>
+</div>
           <p>Conectado a Supabase. Usuario: {session.user.email}</p>
         </div>
 
