@@ -170,6 +170,8 @@ const [scriptSection, setScriptSection] = useState("apertura");
   const [selectedProvince, setSelectedProvince] = useState("all");
   const [selectedCountry, setSelectedCountry] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [tipoEmpresaFilter, setTipoEmpresaFilter] = useState("all");
+const [tipoGrupoFilter, setTipoGrupoFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -276,6 +278,8 @@ function startEditing(funeraria) {
     telefono: funeraria.telefono || "",
     email: funeraria.email || "",
     web: funeraria.web || "",
+    tipo_empresa: funeraria.tipo_empresa || "Funeraria",
+tipo_grupo: funeraria.tipo_grupo || "Independiente",
   });
 }
 
@@ -422,12 +426,18 @@ const countries = useMemo(
     const okStatus =
       statusFilter === "all" || row.estado_contacto === statusFilter;
 
+      const okTipoEmpresa =
+  tipoEmpresaFilter === "all" || row.tipo_empresa === tipoEmpresaFilter;
+
+const okTipoGrupo =
+  tipoGrupoFilter === "all" || row.tipo_grupo === tipoGrupoFilter;
+
     const hayTexto = `${row.nombre} ${row.email} ${row.web} ${row.telefono} ${row.provincia_estado} ${row.ciudad} ${row.pais}`.toLowerCase();
     const okSearch = hayTexto.includes(search.toLowerCase());
 
-    return okCountry && okProvince && okStatus && okSearch;
+    return okCountry && okProvince && okStatus && okTipoEmpresa && okTipoGrupo && okSearch;
   });
-}, [rows, selectedCountry, selectedProvince, statusFilter, search]);
+}, [rows, selectedCountry, selectedProvince, statusFilter, tipoEmpresaFilter, tipoGrupoFilter, search]);
 
   const selected = filteredRows.find((r) => r.id === selectedId) || filteredRows[0] || null;
 
@@ -607,6 +617,8 @@ const dedupe_key = [
     interes: "pendiente",
     dedupe_key,
     origen: "Alta manual CRM",
+    tipo_empresa: newFuneraria.tipo_empresa || "Funeraria",
+tipo_grupo: newFuneraria.tipo_grupo || "Independiente",
   };
 
   const { data, error } = await supabase
@@ -630,6 +642,8 @@ const dedupe_key = [
     telefono: "",
     email: "",
     web: "",
+    tipo_empresa: "Funeraria",
+tipo_grupo: "Independiente",
   });
 
   await loadRows();
@@ -808,6 +822,30 @@ async function deleteAllFunerarias() {
     <option value="contactada">Contactada</option>
     <option value="descartada">No interesada</option>
   </select>
+
+<select
+  className="input"
+  value={tipoEmpresaFilter}
+  onChange={(e) => setTipoEmpresaFilter(e.target.value)}
+>
+  <option value="all">Todos los tipos</option>
+  <option value="Tanatorio">Tanatorio</option>
+  <option value="Funeraria">Funeraria</option>
+  <option value="Tanatorio + Servicios funerarios">
+    Tanatorio + Servicios funerarios
+  </option>
+</select>
+
+<select
+  className="input"
+  value={tipoGrupoFilter}
+  onChange={(e) => setTipoGrupoFilter(e.target.value)}
+>
+  <option value="all">Grupo / independiente</option>
+  <option value="Grupo funerario">Grupo funerario</option>
+  <option value="Independiente">Independiente</option>
+</select>
+
 </section>
 
       <main className="content-grid">
@@ -1030,6 +1068,16 @@ async function deleteAllFunerarias() {
     <div className="info-box"><span>Email</span><strong>{selected.email || "No disponible"}</strong></div>
     <div className="info-box"><span>Web</span><strong>{selected.web || "No disponible"}</strong></div>
     <div className="info-box"><span>Dirección</span><strong>{selected.direccion || "No disponible"}</strong></div>
+    <div className="info-box">
+  <span>Tipo</span>
+  <strong>{selected.tipo_empresa || "Sin clasificar"}</strong>
+</div>
+
+<div className="info-box">
+  <span>Grupo</span>
+  <strong>{selected.tipo_grupo || "Sin clasificar"}</strong>
+</div>
+    
   </div>
 ) : (
   <div className="form-grid">
@@ -1104,6 +1152,37 @@ async function deleteAllFunerarias() {
         onChange={(e) => setEditDraft({ ...editDraft, direccion: e.target.value })}
       />
     </div>
+<div>
+  <label>Tipo</label>
+  <select
+    className="input"
+    value={editDraft?.tipo_empresa || "Funeraria"}
+    onChange={(e) =>
+      setEditDraft({ ...editDraft, tipo_empresa: e.target.value })
+    }
+  >
+    <option value="Tanatorio">Tanatorio</option>
+    <option value="Funeraria">Funeraria</option>
+    <option value="Tanatorio + Servicios funerarios">
+      Tanatorio + Servicios funerarios
+    </option>
+  </select>
+</div>
+
+<div>
+  <label>Grupo / Independiente</label>
+  <select
+    className="input"
+    value={editDraft?.tipo_grupo || "Independiente"}
+    onChange={(e) =>
+      setEditDraft({ ...editDraft, tipo_grupo: e.target.value })
+    }
+  >
+    <option value="Grupo funerario">Grupo funerario</option>
+    <option value="Independiente">Independiente</option>
+  </select>
+</div>
+
   </div>
 )}
 
@@ -1227,6 +1306,9 @@ async function deleteAllFunerarias() {
                     <option value="bajo">Bajo</option>
                   </select>
                 </div>
+
+
+
               </div>
 
               <div>
