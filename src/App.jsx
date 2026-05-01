@@ -180,15 +180,17 @@ const [editDraft, setEditDraft] = useState(null);
   const [importing, setImporting] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [newFuneraria, setNewFuneraria] = useState({
-    nombre: "",
-    direccion: "",
-    pais: "España",
-    ciudad: "",
-    provincia_estado: "",
-    telefono: "",
-    email: "",
-    web: "",
-  });
+  nombre: "",
+  direccion: "",
+  pais: "España",
+  ciudad: "",
+  provincia_estado: "",
+  telefono: "",
+  email: "",
+  web: "",
+  tipo_empresa: "Funeraria",
+  tipo_grupo: "Independiente",
+});
 
   const speechSections = {
   apertura: {
@@ -587,21 +589,20 @@ const dedupe_key = [
       </div>
     );
   }
-
-  async function createFuneraria() {
+async function createFuneraria() {
   if (!newFuneraria.nombre.trim()) {
     alert("El nombre es obligatorio");
     return;
   }
 
   const dedupe_key = [
-  (valorNombre || "").trim().toLowerCase(),
-  (valorPais || "").trim().toLowerCase(),
-  (valorCiudad || "").trim().toLowerCase(),
-  (valorProvincia || "").trim().toLowerCase(),
-  (valorTelefono || "").trim().toLowerCase(),
-  (valorDireccion || "").trim().toLowerCase(),
-].join("|");
+    newFuneraria.nombre?.trim()?.toLowerCase() || "",
+    newFuneraria.pais?.trim()?.toLowerCase() || "",
+    newFuneraria.ciudad?.trim()?.toLowerCase() || "",
+    newFuneraria.provincia_estado?.trim()?.toLowerCase() || "",
+    newFuneraria.telefono?.trim()?.toLowerCase() || "",
+    newFuneraria.direccion?.trim()?.toLowerCase() || "",
+  ].join("|");
 
   const payload = {
     nombre: newFuneraria.nombre || null,
@@ -612,13 +613,13 @@ const dedupe_key = [
     telefono: newFuneraria.telefono || null,
     email: newFuneraria.email || null,
     web: newFuneraria.web || null,
+    tipo_empresa: newFuneraria.tipo_empresa || "Funeraria",
+    tipo_grupo: newFuneraria.tipo_grupo || "Independiente",
     estado_contacto: "no_contactada",
     demo: "no_hecha",
     interes: "pendiente",
     dedupe_key,
     origen: "Alta manual CRM",
-    tipo_empresa: newFuneraria.tipo_empresa || "Funeraria",
-tipo_grupo: newFuneraria.tipo_grupo || "Independiente",
   };
 
   const { data, error } = await supabase
@@ -629,10 +630,12 @@ tipo_grupo: newFuneraria.tipo_grupo || "Independiente",
 
   if (error) {
     alert(`Error creando funeraria: ${error.message}`);
+    console.error("Error creando funeraria:", error);
     return;
   }
 
   setIsCreating(false);
+
   setNewFuneraria({
     nombre: "",
     direccion: "",
@@ -643,7 +646,7 @@ tipo_grupo: newFuneraria.tipo_grupo || "Independiente",
     email: "",
     web: "",
     tipo_empresa: "Funeraria",
-tipo_grupo: "Independiente",
+    tipo_grupo: "Independiente",
   });
 
   await loadRows();
