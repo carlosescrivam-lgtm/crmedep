@@ -248,9 +248,9 @@ Lo mejor sería verlo en una demo en unos minutos..`
   texto: `Trabajamos con un modelo muy sencillo:
 
 Si os registrais ahora, teneis un periodo de 15 dias y 3 servicios totalmente gratis para probarlo y al final de ese período decidis uno de los planes en funcion de volumen
-
-- Plan básico: [85€+iva (102,85€) / mes (30 dias naturales) y hasta 10 servicios disponibles durante ese período]
-- Plan profesional: [135€+iva (163,35€) / mes (30 dias naturales) y hasta 20 servicios disponibles durante ese período]
+-Plan Inicio: [35€+iva (42,35€) / mes (30 dias naturales) y hasta 5 servicios disponibles durante ese período]
+- Plan básico: [50€+iva (60,50€) / mes (30 dias naturales) y hasta 10 servicios disponibles durante ese período]
+- Plan profesional: [85€+iva (102,85€) / mes (30 dias naturales) y hasta 20 servicios disponibles durante ese período]
 - Plan ilimitado: [199€+iva (240,80€) / mes (30 dias naturales) y servicios ilimitados durante ese período]
 
 
